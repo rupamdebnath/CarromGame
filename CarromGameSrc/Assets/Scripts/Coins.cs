@@ -14,10 +14,7 @@ public class Coins : MonoBehaviour
     {
         if (rBody.velocity.magnitude < 1)
         {
-            //Debug.Log("Stopped");
-            //rBody.angularVelocity = 0f;
-            //rBody.SetRotation(0);
-            transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            rBody.angularVelocity = 0f;
         }
             
 
