@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Striker : MonoBehaviour
 {
@@ -15,7 +16,9 @@ public class Striker : MonoBehaviour
     public int strikerSpeed = 500;
     bool hasStriked = false;
     public bool positionIsSet = false;
+    float powerApplied = 10f;
 
+    public Image powerStats;
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -52,10 +55,19 @@ public class Striker : MonoBehaviour
             {
                 positionIsSet = true;
             }
-        }
 
-        if (Input.GetMouseButtonUp(0) && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet)
+        }
+        if(positionIsSet)
         {
+            if (Input.GetMouseButton(0))
+            {
+                powerApplied += 0.1f;
+                powerStats.fillAmount = (float)powerApplied / 100;
+                strikerSpeed = (int)(powerApplied * 50f);
+            }
+        }
+        if (Input.GetMouseButtonUp(0) && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet)
+        {                
             ShootStriker();
         }
 
@@ -70,6 +82,8 @@ public class Striker : MonoBehaviour
         rbody.velocity = Vector2.zero;
         hasStriked = false;
         positionIsSet = false;
+        powerStats.fillAmount = 0;
+        powerApplied = 0f;
     }
 
     public void ShootStriker()
