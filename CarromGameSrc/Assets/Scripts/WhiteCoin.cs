@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coins : MonoBehaviour
+public class WhiteCoin : MonoBehaviour
 {
     Rigidbody2D rBody;
 
@@ -16,7 +16,20 @@ public class Coins : MonoBehaviour
         {
             rBody.angularVelocity = 0f;
         }
-            
 
+    }
+
+    private void OnTriggerEnter2D(Collider2D target)
+    {
+        if (target.tag == "Hole")
+        {
+            Destroy(gameObject);
+            CalculatePoints();
+        }
+    }
+
+    public void CalculatePoints()
+    {
+        GameManager.Instance.TenPoints();
     }
 }
