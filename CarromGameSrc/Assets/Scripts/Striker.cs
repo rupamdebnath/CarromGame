@@ -21,18 +21,14 @@ public class Striker : MonoBehaviour
 
     public Image powerStats;
     public Slider posSlider;
-    //[SerializeField] 
-    //EventSystem m_EventSystem;
-    //[SerializeField] 
-    //GraphicRaycaster m_Raycaster;
     public GameObject Powerbar;
     bool powerFixed = false;
+    bool strikerPointed = false;
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
         startPosition = transform.position;
         selfTransform = transform;
-        arrowTransform = arrowDirection.transform;
     }
     void Update()
     {
@@ -48,35 +44,48 @@ public class Striker : MonoBehaviour
             rbody.angularVelocity =0f;
         }
 
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            PlaceButton();
-        }
-        if(positionIsSet)
-        {
-            if (Input.GetMouseButton(0))
-            {
-                powerApplied += 0.1f;
-                powerStats.fillAmount = (float)powerApplied / 100;
-                strikerSpeed = (int)(powerApplied * 50f);
-                if (powerStats.fillAmount == 1)
-                    powerApplied = 0f;
-            }
-        }
 #if UNITY_ANDROID
         DragShoot();
         GeneratePower();
 
 #endif
 
-#if UNITY_EDITOR
-        if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
-        {
-            //if (Input.GetMouseButtonUp(0))
-                ShootStriker();
-        }
-#endif
+        #region Windows or Mac build specific
+        //#if UNITY_EDITOR
+        //        if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
+        //        {
+        //            //if (Input.GetMouseButtonUp(0))
+        //                ShootStriker();
+        //        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    PlaceButton();
+        //}
+        //if(positionIsSet)
+        //{
+        //    if (Input.GetMouseButton(0))
+        //    {
+        //        powerApplied += 0.1f;
+        //        powerStats.fillAmount = (float)powerApplied / 100;
+        //        strikerSpeed = (int)(powerApplied * 50f);
+        //        if (powerStats.fillAmount == 1)
+        //            powerApplied = 0f;
+        //    }
+        //}
+
+        //    public void PlaceButton()
+        //    {
+        //        if (!positionIsSet)
+        //        {
+        //            positionIsSet = true;
+        //        }
+        //        if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
+        //            Debug.Log("Hallelu");
+        //    }
+        //#endif
+
+        #endregion
+
         if (rbody.velocity.magnitude < 0.2f && rbody.velocity.magnitude != 0)
         {
             StrikerReset();
@@ -102,36 +111,37 @@ public class Striker : MonoBehaviour
         rbody.AddForce(direction * strikerSpeed);
         hasStriked = true;
     }
-#if UNITY_EDITOR
-    public void PlaceButton()
-    {
-        if (!positionIsSet)
-        {
-            positionIsSet = true;
-        }
-        if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
-            Debug.Log("Hallelu");
-    }
-#endif
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         StrikerReset();
         selfTransform.position = new Vector2(Random.Range(-2.71f, 2.65f), startPosition.y);
         positionIsSet = true;
+        strikerPointed = false;
     }
 
     void DragShoot()
     {
-        if(Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
+        
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
             Vector3 startPos = Camera.main.ScreenToWorldPoint(touch.position);
-            //Debug.Log(startPos);
+
             RaycastHit2D hit = Physics2D.Raycast(startPos, -Vector2.up);
-            if (hit && hit.collider.CompareTag("Player"))
+            if (touch.phase == TouchPhase.Began)
+            {
+                if (hit && hit.collider.CompareTag("Player"))
+                    strikerPointed = true;
+
+            }
+            if (touch.phase == TouchPhase.Ended && strikerPointed && powerFixed)
             {
                 Debug.Log("I m hit");
+                ShootStriker();
+                strikerPointed = false;
             }
+
         }
     }
 
@@ -139,7 +149,7 @@ public class Striker : MonoBehaviour
     {
         if(!powerFixed)
         {
-            powerApplied += 0.1f;
+            powerApplied += 0.5f;
             powerStats.fillAmount = (float)powerApplied / 100;
             strikerSpeed = (int)(powerApplied * 50f);
             if (powerStats.fillAmount == 1)
@@ -160,9 +170,7 @@ public class Striker : MonoBehaviour
                 {                   
                     if (go.gameObject == Powerbar)
                     {
-                        //Debug.Log(go.gameObject.name);
                         Debug.Log("power hit");
-                        //powerStats.fillAmount = (float)powerApplied / 100;
                         powerFixed = true;
                     }
                 }
