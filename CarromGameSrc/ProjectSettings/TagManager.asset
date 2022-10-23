@@ -8,6 +8,7 @@ TagManager:
   - BlackCoin
   - WhiteCoin
   - Hole
+  - Power
   layers:
   - Default
   - TransparentFX
