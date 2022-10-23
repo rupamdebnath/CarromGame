@@ -44,7 +44,10 @@ public class Striker : MonoBehaviour
             selfTransform.position = new Vector2(Mathf.Clamp(posSlider.value, -2.71f, 2.65f), startPosition.y);
             rbody.angularVelocity =0f;
         }
-
+        if (foulCounter>=3)
+        {
+            GameManager.Instance.GameOver(false);
+        }
 #if UNITY_ANDROID
         DragShoot();
         GeneratePower();

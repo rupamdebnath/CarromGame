@@ -8,8 +8,11 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager instance;
     public static GameManager Instance { get { return instance; } }
-    public TextMeshProUGUI text;
+    public TextMeshProUGUI scoretext;
 
+    public TextMeshProUGUI gameOvertext;
+    public GameObject gameOverBox;
+    public GameObject powerBar;
     private int scoreValue;
     void Awake()
     {
@@ -22,15 +25,31 @@ public class GameManager : MonoBehaviour
             Destroy(this);
         }
     }
-
+    private void Update()
+    {
+        if(scoreValue == 145)
+        {
+            GameOver(true);
+        }
+    }
     public void FivePoints()
     {
         scoreValue += 5;
-        text.SetText("Score: " + scoreValue);
+        scoretext.SetText("Score: " + scoreValue);
     }
     public void TenPoints()
     {
         scoreValue += 10;
-        text.SetText("Score: " + scoreValue);
+        scoretext.SetText("Score: " + scoreValue);
+    }
+
+    public void GameOver(bool win)
+    {
+        gameOverBox.SetActive(true);
+        powerBar.SetActive(false);
+        if (win)
+            gameOvertext.SetText("Game Over!Congratulations You won!");
+        else
+            gameOvertext.SetText("Game Over!You have Lost!");
     }
 }
