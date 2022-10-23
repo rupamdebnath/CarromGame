@@ -24,6 +24,9 @@ public class Striker : MonoBehaviour
     public GameObject Powerbar;
     bool powerFixed = false;
     bool strikerPointed = false;
+    int foulCounter = 0;
+    [SerializeField]
+    GameObject foulText;
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -119,8 +122,15 @@ public class Striker : MonoBehaviour
         selfTransform.position = new Vector2(Random.Range(-2.71f, 2.65f), startPosition.y);
         positionIsSet = true;
         strikerPointed = false;
+        foulCounter++;
+        StartCoroutine(WaitForText(1));
     }
-
+    IEnumerator WaitForText(float seconds)
+    {
+        foulText.SetActive(true);
+        yield return new WaitForSeconds(seconds);
+        foulText.SetActive(false);
+    }
     //Fetch touchcount and shoot striker with power when touchphase ends
     void DragShoot()
     {
