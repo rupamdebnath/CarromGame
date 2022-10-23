@@ -31,15 +31,13 @@ public class Striker : MonoBehaviour
         selfTransform = transform;
     }
     void Update()
-    {
-        
+    {        
         worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         direction = (Vector2)((worldMousePos - transform.position));
         direction.Normalize();
-        //Debug.Log(positionIsSet);
+        
         if (!hasStriked && !positionIsSet)
         {
-            //selfTransform.position = new Vector2(Mathf.Clamp(worldMousePos.x, -2.71f, 2.65f), startPosition.y);
             selfTransform.position = new Vector2(Mathf.Clamp(posSlider.value, -2.71f, 2.65f), startPosition.y);
             rbody.angularVelocity =0f;
         }
@@ -50,39 +48,39 @@ public class Striker : MonoBehaviour
 
 #endif
 
-        #region Windows or Mac build specific
-        //#if UNITY_EDITOR
-        //        if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
-        //        {
-        //            //if (Input.GetMouseButtonUp(0))
-        //                ShootStriker();
-        //        }
-        //if (Input.GetMouseButtonDown(1))
-        //{
-        //    PlaceButton();
-        //}
-        //if(positionIsSet)
-        //{
-        //    if (Input.GetMouseButton(0))
-        //    {
-        //        powerApplied += 0.1f;
-        //        powerStats.fillAmount = (float)powerApplied / 100;
-        //        strikerSpeed = (int)(powerApplied * 50f);
-        //        if (powerStats.fillAmount == 1)
-        //            powerApplied = 0f;
-        //    }
-        //}
+        #region Windows or Mac build specific not required for Android
+#if UNITY_STANDALONE
+        if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
+        {
+            //if (Input.GetMouseButtonUp(0))
+            ShootStriker();
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            PlaceButton();
+        }
+        if (positionIsSet)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                powerApplied += 0.1f;
+                powerStats.fillAmount = (float)powerApplied / 100;
+                strikerSpeed = (int)(powerApplied * 50f);
+                if (powerStats.fillAmount == 1)
+                    powerApplied = 0f;
+            }
+        }
 
-        //    public void PlaceButton()
-        //    {
-        //        if (!positionIsSet)
-        //        {
-        //            positionIsSet = true;
-        //        }
-        //        if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
-        //            Debug.Log("Hallelu");
-        //    }
-        //#endif
+        public void PlaceButton()
+        {
+            if (!positionIsSet)
+            {
+                positionIsSet = true;
+            }
+            if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
+                Debug.Log("Hallelu");
+        }
+#endif
 
         #endregion
 
@@ -92,6 +90,7 @@ public class Striker : MonoBehaviour
         }
     }
 
+    //Reset striker in baseline along with power bar once it has been fired
     public void StrikerReset()
     {
         rbody.velocity = Vector2.zero;
@@ -103,6 +102,7 @@ public class Striker : MonoBehaviour
         powerFixed = false;
     }
 
+    //main shoot function that uses the striker speed and adds a force in the set direction
     public void ShootStriker()
     {
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -112,6 +112,7 @@ public class Striker : MonoBehaviour
         hasStriked = true;
     }
 
+    //To check for striker foul when it is pocketed, fix random position in baseline and don't allow user to move it
     private void OnTriggerEnter2D(Collider2D collision)
     {
         StrikerReset();
@@ -120,6 +121,7 @@ public class Striker : MonoBehaviour
         strikerPointed = false;
     }
 
+    //Fetch touchcount and shoot striker with power when touchphase ends
     void DragShoot()
     {
         
@@ -137,14 +139,13 @@ public class Striker : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Ended && strikerPointed && powerFixed)
             {
-                Debug.Log("I m hit");
                 ShootStriker();
                 strikerPointed = false;
             }
 
         }
     }
-
+    //For setting the power value in the power bar with touch in respective area
     void GeneratePower()
     {
         if(!powerFixed)
@@ -170,7 +171,6 @@ public class Striker : MonoBehaviour
                 {                   
                     if (go.gameObject == Powerbar)
                     {
-                        Debug.Log("power hit");
                         powerFixed = true;
                     }
                 }

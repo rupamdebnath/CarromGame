@@ -12,6 +12,7 @@ public class BlackCoin : MonoBehaviour, IPointCalculate
     }
     void Update()
     {
+        //stop unwanted rotation that happens for sometime after hit by striker
         if (rBody.velocity.magnitude < 1)
         {
             rBody.angularVelocity = 0f;
@@ -19,6 +20,7 @@ public class BlackCoin : MonoBehaviour, IPointCalculate
 
     }
 
+    //Check if pocketed and calculate respective score
     private void OnTriggerEnter2D(Collider2D target)
     {
         if(target.tag == "Hole")
