@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverBox;
     public GameObject powerBar;
     private int scoreValue;
+    public bool winLoseSound;
     void Awake()
     {
         if (instance == null)
@@ -48,8 +50,20 @@ public class GameManager : MonoBehaviour
         gameOverBox.SetActive(true);
         powerBar.SetActive(false);
         if (win)
+        {
             gameOvertext.SetText("Game Over!Congratulations You won!");
+            //SceneController.Instance.StopAllSounds();
+            winLoseSound = true;
+            //SceneController.Instance.PlaySound(Sounds.GameWin);
+        }            
         else
+        {
             gameOvertext.SetText("Game Over!You have Lost!");
+            //SceneController.Instance.StopAllSounds();
+            winLoseSound = false;
+            //StartCoroutine(WaitForSoundStop());
+            //SceneController.Instance.PlaySound(Sounds.GameLose);
+        }
+            
     }
 }

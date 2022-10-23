@@ -59,7 +59,7 @@ public class Striker : MonoBehaviour
         if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
         {
             //if (Input.GetMouseButtonUp(0))
-            ShootStriker();
+            //ShootStriker();
         }
         if (Input.GetMouseButtonDown(1))
         {
@@ -114,7 +114,9 @@ public class Striker : MonoBehaviour
         Vector3 worldMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 direction = (Vector2)(worldMousePos - transform.position);
         direction.Normalize();
+        strikerSpeed = (int)(powerApplied * 50f);
         rbody.AddForce(direction * strikerSpeed);
+        SceneController.Instance.PlaySound(Sounds.Striker);
         hasStriked = true;
     }
 
@@ -125,6 +127,7 @@ public class Striker : MonoBehaviour
         selfTransform.position = new Vector2(Random.Range(-2.71f, 2.65f), startPosition.y);
         positionIsSet = true;
         strikerPointed = false;
+        hasStriked = false;
         foulCounter++;
         StartCoroutine(WaitForText(1));
     }
@@ -150,10 +153,9 @@ public class Striker : MonoBehaviour
                     strikerPointed = true;
 
             }
-            if (touch.phase == TouchPhase.Ended && strikerPointed && powerFixed)
+            if (touch.phase == TouchPhase.Ended && strikerPointed && powerFixed && !hasStriked)
             {
-                ShootStriker();
-                strikerPointed = false;
+                ShootStriker();              
             }
 
         }
@@ -163,9 +165,9 @@ public class Striker : MonoBehaviour
     {
         if(!powerFixed)
         {
-            powerApplied += 0.5f;
+            powerApplied += 1f;
             powerStats.fillAmount = (float)powerApplied / 100;
-            strikerSpeed = (int)(powerApplied * 50f);
+            
             if (powerStats.fillAmount == 1)
                 powerApplied = 0f;
         }
@@ -173,11 +175,11 @@ public class Striker : MonoBehaviour
         if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
         {
             PointerEventData pointer = new PointerEventData(EventSystem.current);
-            pointer.position = Input.mousePosition;
+            pointer.position = Input.GetTouch(0).position;
 
             List<RaycastResult> raycastResults = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointer, raycastResults);
-
+            
             if (raycastResults.Count > 0)
             {
                 foreach (var go in raycastResults)
@@ -185,6 +187,7 @@ public class Striker : MonoBehaviour
                     if (go.gameObject == Powerbar)
                     {
                         powerFixed = true;
+                        strikerPointed = false;
                     }
                 }
 

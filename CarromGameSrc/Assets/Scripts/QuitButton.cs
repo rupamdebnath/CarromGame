@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayButton : MonoBehaviour
+public class QuitButton : MonoBehaviour
 {
     Button thisButton;
     void Start()
@@ -14,8 +14,9 @@ public class PlayButton : MonoBehaviour
 
     void ClickFunction()
     {
-        SceneController.Instance.LoadCorrectScene(1);
-        SceneController.Instance.PlaySound(Sounds.GameStart);
-        SceneController.Instance.PlaySound(Sounds.BG);
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+        Application.Quit();
     }
 }

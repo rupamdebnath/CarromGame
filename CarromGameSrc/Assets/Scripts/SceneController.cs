@@ -9,6 +9,7 @@ public class SceneController : MonoBehaviour
     public static SceneController Instance { get { return instance; } }
 
     private int scoreValue;
+    public List<AudioSource> SoundsList;
     void Awake()
     {        
         if (instance == null)
@@ -26,4 +27,28 @@ public class SceneController : MonoBehaviour
     {
         SceneManager.LoadScene(sceneIndex);
     }
+
+    public void PlaySound(Sounds sound)
+    {
+        SoundsList[(int)(sound)].Play();
+    }
+
+    public void StopAllSounds()
+    {
+        for(int i = 0; i < SoundsList.Count; i++)
+        {
+            if(SoundsList[i].isPlaying)
+                SoundsList[i].Stop();
+        }
+        
+    }
+}
+
+public enum Sounds
+{
+    GameStart,
+    BG,
+    GameWin,
+    GameLose,
+    Striker
 }
