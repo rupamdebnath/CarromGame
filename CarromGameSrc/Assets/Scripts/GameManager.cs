@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverBox;
     public GameObject powerBar;
     private int scoreValue;
-    public bool winLoseSound;
+    bool winLoseSound;
     void Awake()
     {
         if (instance == null)
@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if(scoreValue == 145)
+        if(scoreValue >= 145)
         {
             GameOver(true);
         }
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver(bool win)
     {
-        gameOverBox.SetActive(true);
+        
         powerBar.SetActive(false);
         if (win)
         {
@@ -64,6 +64,11 @@ public class GameManager : MonoBehaviour
             //StartCoroutine(WaitForSoundStop());
             //SceneController.Instance.PlaySound(Sounds.GameLose);
         }
-            
+        gameOverBox.SetActive(true);
+    }
+
+    public bool winCondition()
+    {
+        return winLoseSound;
     }
 }

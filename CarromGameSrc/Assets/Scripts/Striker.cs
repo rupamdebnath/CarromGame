@@ -27,6 +27,7 @@ public class Striker : MonoBehaviour
     int foulCounter = 0;
     [SerializeField]
     GameObject foulText;
+    bool startForce = false;
     void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -56,36 +57,36 @@ public class Striker : MonoBehaviour
 
         #region Windows or Mac build specific not required for Android
 #if UNITY_STANDALONE
-        if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
-        {
-            //if (Input.GetMouseButtonUp(0))
-            //ShootStriker();
-        }
-        if (Input.GetMouseButtonDown(1))
-        {
-            PlaceButton();
-        }
-        if (positionIsSet)
-        {
-            if (Input.GetMouseButton(0))
-            {
-                powerApplied += 0.1f;
-                powerStats.fillAmount = (float)powerApplied / 100;
-                strikerSpeed = (int)(powerApplied * 50f);
-                if (powerStats.fillAmount == 1)
-                    powerApplied = 0f;
-            }
-        }
+        //if (Input.GetButtonUp("Fire1") && rbody.velocity.magnitude < 1 && !hasStriked && positionIsSet && !EventSystem.current.IsPointerOverGameObject()) //  
+        //{
+        //    //if (Input.GetMouseButtonUp(0))
+        //    //ShootStriker();
+        //}
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    PlaceButton();
+        //}
+        //if (positionIsSet)
+        //{
+        //    if (Input.GetMouseButton(0))
+        //    {
+        //        powerApplied += 0.1f;
+        //        powerStats.fillAmount = (float)powerApplied / 100;
+        //        strikerSpeed = (int)(powerApplied * 50f);
+        //        if (powerStats.fillAmount == 1)
+        //            powerApplied = 0f;
+        //    }
+        //}
 
-        public void PlaceButton()
-        {
-            if (!positionIsSet)
-            {
-                positionIsSet = true;
-            }
-            if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
-                Debug.Log("Hallelu");
-        }
+        //public void PlaceButton()
+        //{
+        //    if (!positionIsSet)
+        //    {
+        //        positionIsSet = true;
+        //    }
+        //    if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
+        //        Debug.Log("Hallelu");
+        //}
 #endif
 
         #endregion
@@ -115,11 +116,22 @@ public class Striker : MonoBehaviour
         Vector2 direction = (Vector2)(worldMousePos - transform.position);
         direction.Normalize();
         strikerSpeed = (int)(powerApplied * 50f);
-        rbody.AddForce(direction * strikerSpeed);
-        SceneController.Instance.PlaySound(Sounds.Striker);
-        hasStriked = true;
+        startForce = true;
+        //if (rbody.velocity.sqrMagnitude <= 0.1f)
+        //    return;
+        
     }
-
+    private void FixedUpdate()
+    {
+        if(startForce)
+        {
+            rbody.AddForce(direction * strikerSpeed);
+            SceneController.Instance.PlaySound(Sounds.Striker);
+            hasStriked = true;
+            startForce = false;
+        }
+            
+    }
     //To check for striker foul when it is pocketed, fix random position in baseline and don't allow user to move it
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -165,7 +177,7 @@ public class Striker : MonoBehaviour
     {
         if(!powerFixed)
         {
-            powerApplied += 1f;
+            powerApplied += (50f * Time.deltaTime);
             powerStats.fillAmount = (float)powerApplied / 100;
             
             if (powerStats.fillAmount == 1)
